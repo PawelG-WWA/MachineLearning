@@ -27,14 +27,18 @@ class AdalineGD(object):
         self.w_ = rgen.normal(loc=0.0, scale=0.01, size=1+X.shape[1])
         self.cost_ = []
 
-        for i in range(self.epochs):
-            net_input = self.net_input(X)
-            output = self.activation(net_input)
-            errors = (y - output)
-            self.w_[1:] += self.eta * X.T.dot(errors)
-            self.w_[0] += self.eta * errors.sum()
-            cost = (errors**2).sum() / 2.0
-            self.cost_.append(cost)
+        #for i in range(self.epochs):
+        # calculate linear combination/dot product between examples X
+        net_input = self.net_input(X)
+        # run activation function (in this example - it's just an identity function)
+        output = self.activation(net_input)
+        # calculate errors by subtracting dot product from known labels
+        errors = (y - output)
+        # update weights
+        self.w_[1:] += self.eta * X.T.dot(errors) # X.T.dot(errors) - matrix product
+        self.w_[0] += self.eta * errors.sum()
+        cost = (errors**2).sum() / 2.0
+        self.cost_.append(cost)
         
         return self
 
@@ -43,7 +47,7 @@ class AdalineGD(object):
         """
         dot product between X (current example) and weights, enlarged by bias unit
         """
-        return np.dot(X, self.w_[1:]) + self.q_[0]
+        return np.dot(X, self.w_[1:]) + self.w_[0]
 
 
     def activation(self, X):
